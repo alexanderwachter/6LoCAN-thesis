@@ -1,0 +1,25 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.6, node distance=2cm, every node/.append style={scale=0.6}]
+		\node (start) [startstop] {Interface Up};
+		\node (ll_ten) [process, below = of start] {Chose Tentative Link-Local Address (static address or random)};
+		\node (lldad_req) [io, below = of ll_ten] {Send LLDAD-Request};
+		\node (lldad_resp) [io, below = of lldad_req] {Wait for LLDAD-Response or 100ms Timeout};
+		\node (lldad) [decision, below = of lldad_resp] {LLDAD-Response received?};
+		\node (rand) [decision, right of=lldad, xshift=7cm] {Random address?};
+		\node (lldad_fail) [startstop, below = of rand] {LLDAD failed};
+		\node (success) [startstop, below = of lldad] {Use Tentative Address as Node Address};
+
+		\draw [arrow] (start) -- (ll_ten);
+		\draw [arrow] (ll_ten) -- (lldad_req);
+		\draw [arrow] (lldad_req) -- (lldad_resp);
+		\draw [arrow] (lldad_resp) -- (lldad);
+		\draw [arrow] (lldad) -- node [anchor=south] {yes (LLDAD failed)} (rand);
+		\draw [arrow] (lldad) -- node [anchor=east] {no (LLDAD succeeded)} (success);
+		\draw [arrow] (rand) |- node [anchor=south] {yes} (ll_ten);
+		\draw [arrow] (rand) -- node [anchor=east] {no} (lldad_fail);
+	\end{tikzpicture}
+	\end{center}
+	\caption{Link-Layer Duplicate Address Detection}
+	\label{fig:des_lldad}
+\end{figure}

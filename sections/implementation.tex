@@ -1,0 +1,235 @@
+\chapter{Implementation}
+\label{cha:implementation}
+
+The 6LoCAN protocol is implemented into the Zephyr RTOS and made its way to the 2.0 release.
+The implementation was made in two phases.
+First we introduced a generic CAN API and an implementation of it for the STM32 microcontroller platform.
+In the second phase, I implemented the 6LoCAN translation layer into the Zephyr networking stack.
+
+\section{The Zephyr CAN API}
+\label{sec:can_api}
+Before this work, the Zephyr RTOS was lacking a CAN API, so the first step was to create a platform-agnostic API.
+The API should only support features defined by the CAN specification \cite{BoschCAN},
+to ensure that the network or application layer can rely on the API features.
+
+The first API had an interface for the following features:
+\begin{itemize}
+        \item Configure the mode and bitrate of the controller.
+        \item Send a frame
+        \item Attach a CAN filter and submit a callback whenever the filter matches on a frame
+        \item Attach a CAN filter and submit the frame to a message queue whenever the filter matches
+        \item Detach attached filters
+\end{itemize}
+
+It also defined containers for CAN frames and CAN filters called zcan\_frame and zcan\_filter.
+The containers provide a platform-agnostic way to handle frames and filters.
+The specific driver implementation is responsible for converting the zcan\_frame and zcan\_filter to the respective register values.
+
+The Zephyr community agreed on my API proposal and the implementation for the STM32 platform and it was merged merged into Zephyr version 1.12.
+The API evolved over the time and got extended by an API the get the bus state and recover from bus-off state.
+Additionally people from the Zephyr community added two other driver implementations.
+One for an external CAN controller (MCP2515) and one for NXP platforms, based on NXPs flexcan IP.
+
+\subsection{Zephyr CAN frame}
+\begin{lstlisting}[style=ccode, numbers=none]
+struct zcan_frame {
+	u32_t id_type : 1;
+	u32_t rtr     : 1;
+	u32_t ext_id  : 29;
+	u8_t  dlc;
+	u8_t  data[8];
+};
+\end{lstlisting}
+The struct above shows a simplified version of a Zephyr CAN frame.
+It is a container for a CAN frame and includes the identifier type, the identifier, a flag for RTR frames, the data length code, and the data data.
+
+\subsection{Zephyr CAN filter}
+\begin{lstlisting}[style=ccode, numbers=none]
+struct zcan_filter {
+	u32_t id_type  : 1;
+	u32_t rtr      : 1;
+	u32_t ext_id   : 29;
+
+	u32_t rtr_mask    : 1;
+	u32_t ext_id_mask : 29;
+}
+\end{lstlisting}
+The struct above shows a simplified version of a Zephyr CAN filter struct.
+It is a container for a CAN filter and includes the identifier type, the identifier, the RTR bit, and the masks for the identifier and RTR-bit.
+The mask signals which bits of the identifier should be taken into account during the filtering.
+Bits that are set to one are compared and bits that are zero are ignored.
+Lets take an example of a filter with an identifier of 0x123 and a mask of 0xff.
+Frames with the identifier 0x123, 0x223, or generally 0xX23, where X is any number, would pass the filter.
+Frames with the identifier 0x124, 0x133, or generally 0xYXX, where XX is not 0x23, will not pass the filter.
+
+\subsection{Sending CAN frames}
+\begin{lstlisting}[style=ccode, numbers=none]
+int can_send(struct device *dev, const struct zcan_frame *msg,
+             s32_t timeout, can_tx_callback_t callback_isr,
+             void *callback_arg);
+\end{lstlisting}
+The Send API is defined as shown above.
+It takes a pointer to the CAN device, a pointer to the frame container, a timeout, a callback function and an argument that is passed to the callback function.
+The function sends the frame as soon as a mailbox is ready to send a message.
+If a NULL pointer is passed to as the callback function, the call blocks until the message is sent.
+Otherwise the callback is called when the message is sent.
+
+\subsection{Receiving CAN frames}
+
+\begin{lstlisting}[style=ccode, numbers=none]
+int can_attach_isr(struct device *dev,
+                   can_rx_callback_t isr, void *callback_arg,
+                   const struct zcan_filter *filter);
+\end{lstlisting}
+The main receiving function is shown above.
+It takes a pointer to the CAN device, the function that should be called when a frame that passes the filter is received,
+an argument that is passed to the callback and the CAN filter.
+The function returns a filter-id to uniquely identify the attached filter.
+The filter-id is used for detaching the filter when needed.
+The CAN controller reads any message on the bus and compares the identifier to the attached filters.
+If a filter matches, the respective callback is called.
+If the identifier matches more that one filter, the function called depends on the metrics of the CAN controller.
+The callback is called in an interrupt context and therefor is not allowed to block and should keep the execution time as low as possible.
+
+\begin{lstlisting}[style=ccode, numbers=none]
+int can_attach_workq(struct device *dev, struct k_work_q *work_q,
+                     struct zcan_work *work,
+                     can_rx_callback_t callback,
+                     void *callback_arg,
+                     const struct zcan_filter *filter);
+\end{lstlisting}
+The can\_attach\_workq function is a wrapper for the can\_attach\_isr,
+that calls the callback function in the context of the provided work queue instead of an ISR context.
+
+\begin{lstlisting}[style=ccode, numbers=none]
+int can_attach_msgq(struct device *dev, struct k_msgq *msg_q,
+                    const struct zcan_filter *filter);
+\end{lstlisting}
+The can\_attach\_msgq function attaches a message queue instead on a callback.
+Whenever a frame that matches the filter is received, it is put into the message queue.
+The message queue can then be read within a thread.
+
+\section{6LoCAN Implementation}
+\label{sec:6locan_impl}
+
+\input{figures/zephyr_net_stack_rx}
+
+A Link-Layer Implementation in Zephyr consist of two layers.
+The Network Device Driver and the Link-Layer implementation (L2), which are highlighted in \autoref{fig:zephyr_net_stack_rx}.
+For the 6LoCAN implementation, the Network Device Driver is an abstraction of the Zephyr CAN API that installs the respective frame filters,
+handles the incoming CAN frames in an interrupt context, puts them into network packets, sets the Link-Layer address of them,
+and and hands the packet over to the receiving work-queue. For sending CAN frames, the abstraction only forwards the raw CAN frames.
+The 6LoCAN Link-Layer implementation does the parsing of the ISO-TP header, fragmentation and reassembly, and IPHC header compression and decompression.
+The device driver implementation is explained in detail in \autoref{sec:6locan_net_dev},
+and the L2 implementation is explained in detail in \autoref{sec:6locan_l2}.
+
+\newpage
+
+\autoref{fig:zephyr_net_stack_rx} shows an example of receiving a UDP packet.
+\begin{enumerate}
+        \item The CAN network device driver uses the CAN API to receive the raw CAN frames.
+              The frames are copied into network packets and handed over to the Net Core.
+              The Net Core accepts the packet and puts it into a receiving work-queue, depending on the priority of the packet.
+        \item When the receiving queue is scheduled, the packet is handed over to the Network Interface.
+        \item The Network Interface calls the 6LoCAN L2 implementation with the received packet, which analyzes the frame content.
+              The L2 implementation performs the reassembly (ISO-TP) and when the packet is complete, the IPHC decompression.
+        \item If the packet is complete and decompression is successful, the reassembled packet is passed back to the Network Interface.
+        \item The packet is then forwarded to the Net Core.
+        \item The Network Core checks the IP header version and if it is IPv6, the IPv6 implementation is called.
+              The IPv6 implementation checks the IPv6 headers and discards the packet if the destination does not match any addresses of the interface.
+        \item Depending on the next header field, the specific transport layer implementation is called. In this Example, it is UDP.
+        \item The UDP implementation parses the UDP header, checks the checksum and length of the packet, and returns the result to the IPv6 implementation.
+        \item If the packet is valid, the IPv6 implementation passes the packet to the Net-Context API.
+        \item The Net-Context API checks for registered sockets on the destination-port.
+        \item If a socket is listening to the destination-port, the Socket-API passes the packet to the networking-application.
+\end{enumerate}
+
+\newpage
+\input{figures/zephyr_net_stack_tx}
+
+\autoref{fig:zephyr_net_stack_tx} shows an example of sending a UDP packet.
+\begin{enumerate}
+        \item The Application sends a chunk of data by using the Socket-API.
+        \item The Socket-API binds the request to the context of the opened socket and uses the API to send the data.
+        \item The Net-Context implementation calls the IPv6 implementation to fill the IPv6 headers. The interface information, like the source IP address,
+              is taken from the interface associated to the Net-Context.
+        \item The Net-Context implementation calls the UDP implementation to fill the UDP headers.
+        \item The packet is then handed over to the network core.
+        \item The network core calls the Network Interface abstraction, which fills the Link-Layer addresses (from either neighborhood discovery or cache).
+        \item The Network Interface abstraction then puts the packet into the sending work-queue. The work-queue thread then calls th 6LoCAN Link-Layer.
+              The Link-Layer creates a ISO-TP context and performs the fragmentation.
+        \item For every frame that is sent, the CAN network driver is called.
+\end{enumerate}
+
+\FloatBarrier
+\subsection{6LoCAN Network Device Driver}
+\label{sec:6locan_net_dev}
+
+The 6LoCAN Network Device Driver is responsible for receiving and sending RAW CAN frames.
+For this purpose it is using the Zephyr CAN API.
+The API exposes five functions:
+\begin{itemize}
+        \item Interface Initialization
+        \item Enabling/Disabling
+        \item Sending
+        \item Attaching Filters
+        \item Detaching Filters
+\end{itemize}
+
+\textbf{Interface Initialization} binds the driver context to an interface, calls the initialization function of the 6LoCAN Link-Layer and registers the multicast monitor.
+The multicast monitor is called whenever a multicast group is added to an interface.
+
+\textbf{Enable} is called from the 6LoCAN Link-Layer whenever the interface changes its state from up (enabled) to down (disabled) or vice versa.
+If the interface is going to be brought up, then this function attaches the unicast CAN filter.
+This filter receives unicast frames where the destination address matches the interface link-local address.
+If the interface is going to be brought to the down state, the unicast filter is detached.
+
+\textbf{Send} forwards the incoming frames to the Zephyr CAN API without any modification.
+
+\textbf{Attach Filter} and \textbf{Detach Filter} are wrappers for the Zephyr CAN API, and work the same way the Zephyr CAN API do.
+They are used to attach filters for the Link-Layer Duplicate Address Detection (LLDAD), from the 6LoCAN Link-Layer.
+
+Whenever a frame on the bus matches the unicast filter, the receiving function is called.
+This function allocates a net packet that is large enough to hold the frame payload, the source and the destination Link-Layer address.
+The addresses are taken from the frame identifier and copied into the packet, followed by the frame payload.
+The resulting packet is then put into the receiving work-queue of the network stack, which later passes it to the 6LoCAN Link-Layer.
+
+The multicast monitor is responsible for attaching filters for the corresponding multicast group.
+The filter matches the the last 14 bits of the IP address and the multicast flag. The source address is ignored for the comparison.
+For receiving the frames, the same receiving function is used, as it is used for unicast frames.
+
+\subsection{6LoCAN Link-Layer}
+\label{sec:6locan_l2}
+
+The 6LoCAN Link-Layer gets the raw CAN frames from the 6LoCAN Network Device Driver in the thread context of the receiving queue.
+It is responsible for handling the ISO-TP transfers that can either be a single frame or a fragmented transfer consisting of many frames.
+If the packet does not fit into a single frame, the fragmentation, reassembly and flow control is also managed by this layer.
+Fragmented packets are associated with a context that represents a single ISO-TP transfer.
+This context contains all the information necessary to handle the segmentation, reassembly and flow control.
+The LLDAD is also performed from this layer whenever the interface is initialized.
+
+Whenever a frame arrives, the ISO-TP PCI type is checked to determine what to do next with the frame.
+
+Single frames can be handled in one shot and therefor need no additional context.
+The implementation removes the ISO-TP header, checks the length and performs the IPHC decompression.
+After that, the packet is processed by the higher layers.
+
+If a First Frame arrives, the implementation reads the total packet length and allocates a new packet that is able to carry the reassembled data.
+To keep track of the reassembly process, an ISO-TP context is allocated and linked with the newly allocated packet.
+The context contains the actual state of reassembly, timeout timers, a remaining data counter, sequence number and the block counter.
+The context is then initialized with the data from the first frame, the residual data is copied to the packet and a if the it is not a multicast transfer,
+a Frame Control Frame is sent back to the sender.
+
+For Consecutive frames, the implementation checks if is a context that is in the state of receiving consecutive frames and is linked to a packet from the same sender.
+If a context could be found, the data in the Consecutive Frame is added to the packet.
+If the counter for remaining data in this context reaches zero, the reassembled packet is pushed to the receiving queue and ands up in this implementation again.
+On the finished packet, IPHC decompression is performed and the upper layers continue processing the packet.
+
+Outgoing packets can either be single frames, if they are short enough, or need to be split into several frames.
+The frame Identifier is composed from the Link-Layer addresses.
+The Link-Layer source and destination address is already defined by the packet.
+If the packet can be sent as a single frame, the implementation creates a CAN frame with an ISO-TP Single Frame header and the data from the packet.
+If the packet needs several frames, the implementation allocates an ISO-TP sending context, initializes it with the information from the packet,
+and sends out the ISO-TP first frame.
+The implementation is then waiting for a Frame Control Frame to continue with sending the Consecutive frames.
+The implementation sends as many consecutive frames as necessary to complete the transfer.

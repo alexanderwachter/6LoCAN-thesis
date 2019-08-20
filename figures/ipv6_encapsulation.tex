@@ -1,0 +1,45 @@
+\begin{figure}[htp]
+	\begin{tikzpicture}[
+		psuite/.style={
+			draw=black,
+			rounded corners,
+			rectangle, 
+			minimum width=3.5cm,
+			minimum height=0.75cm,
+			font=\small},
+		frame/.style= {
+			draw=black,
+			rectangle, 
+			minimum width=1.75cm,
+			minimum height=0.5cm,
+			font=\tiny}]
+		\node (app) [psuite, fill=orange!30] {Application};
+		\node [right of=app, xshift=9.25cm, frame, fill=orange!30] {App data};
+		\node (transp) [below of=app, psuite, fill=green!30] {Transport};
+		\node [right of=transp, xshift=9.25cm, frame, fill=orange!30] {App data};
+		\node [right of=transp, xshift=7.5cm, frame, fill=green!30] {Next Header};
+		\node (inet) [below of=transp, psuite, fill=blue!30] {Internet};
+		\node [right of=inet, xshift=9.25cm, frame, fill=orange!30] {App data};
+		\node [right of=inet, xshift=7.5cm, frame, fill=green!30] {Next Header};
+		\node [right of=inet, xshift=5.75cm, frame, fill=blue!30] {IPv6 Header};
+		\node (link) [below of= inet, psuite, fill=red!30] {Link};
+		\node [right of=link, xshift=9.25cm, frame, fill=orange!30] {App data};
+		\node [right of=link, xshift=7.5cm, frame, fill=green!30] {Next Header};
+		\node [right of=link, xshift=5.75cm, frame, fill=blue!30] {IPv6 Header};
+		\node [right of=link, xshift=4cm, frame, fill=red!30] {Link Header};
+
+		\draw [thick, ->]($(app.east) + (0.8cm,0)$) -- ($(link.east) + (0.8cm,0)$) node[midway, above = 0.1, rotate=90] {\small Send};
+		\draw [thick, <-]($(app.east) + (1.2cm,0)$) -- ($(link.east) + (1.2cm,0)$) node[midway, above = 0.1, rotate=270] {\small Receive};
+
+		\node [above of=app, yshift=0.25cm] {Internet Protocol Suite};
+		\node [above of=app, yshift=0.25cm, xshift=8cm] {Frame};
+
+		\begin{scope}[on background layer]
+			\fill [black!15] ($(app.north west) + (-0.25cm, 0.25)$) rectangle ($(link.south east)+ (0.25cm, -0.25)$);
+			\fill [black!15] ($(app.north) + (3.75cm, 0.25)$) rectangle ($(link.south)+ (11.5cm, -0.25)$);
+		\end{scope}
+
+	\end{tikzpicture}
+	\caption{IPv6 Header Encapsulation}
+	\label{fig:ipv6_encapsulation}
+\end{figure}

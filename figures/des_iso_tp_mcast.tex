@@ -1,0 +1,43 @@
+\begin{figure}[htp]
+\begin{center}
+	\begin{tikzpicture}[scale=0.7]
+		%Sender
+		\node (s_ff) at (0,10)  {};
+		\node (s_cf1) at (0,7) {};
+		\node (s_cf2) at (0,5) {};
+		\node (s_cf3) at (0,3) {};
+		
+		%Receiver
+		\node (r_ff) at (12,9)  {};
+		\node (r_cf1) at (12,6) {};
+		\node (r_cf2) at (12,4) {};
+		\node (r_cf3) at (12,2) {};
+
+
+		%connections
+		\draw[thick, ->] (s_ff) -- node[midway, fill=white] {First Frame} (r_ff);
+		\draw[thick,->] (s_cf1) -- node[midway, fill=white] {Consecutive Frame} (r_cf1);
+		\draw[thick,->] (s_cf2) -- node[midway, fill=white] {Consecutive Frame} (r_cf2);
+		\draw[thick,->] (s_cf3) -- node[midway, fill=white] {Consecutive Frame} (r_cf3);
+		
+		%FF - CF time
+		\draw (r_ff) -- ++(2,0);
+		\draw (s_cf1) -- ++(14,0);
+		\draw[<->] ($(r_ff) + (1,0)$) -- ($(s_cf1) + (13,0)$) node[midway,right]{\small 1ms};
+
+		%stmin
+		\draw (r_cf2) -- ++(2,0);
+		\draw (s_cf3) -- ++(14,0);
+		\draw[<->] ($(r_cf2) + (1,0)$) -- ($(s_cf3) + (13,0)$) node[midway,right]{\small $ST_{min}$};
+		
+		%Flow
+		\draw[very thick, ->] (0,10.5) --  (0,0);
+		\node at (0,11) {Sender};
+		\draw[very thick, ->] (12,10.5) -- (12,0);
+		\node at (12,11) {Receiver};
+		
+	\end{tikzpicture}
+	\caption{Example Multicast Sequence}
+	\label{fig:des_iso_tp_mcast}
+\end{center}
+\end{figure}

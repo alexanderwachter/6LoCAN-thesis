@@ -1,0 +1,26 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.35,  every node/.style={scale=0.35},
+		region/.style={
+			rectangle, 
+			minimum height=1.5cm,
+			font=\huge}]
+
+		\node (mcast) [region, minimum width=1cm] {1};
+		\node (dest) [region, right of=mcast,xshift=6.5cm, minimum width=14cm] {Multicast-Group};
+		\node (src) [region, right of=dest,xshift=13cm, minimum width=14cm] {SRC Node-Address};
+
+		\draw (mcast.north west) -- (src.north east);
+		\draw (mcast.south west) -- (src.south east);
+		\draw (mcast.south west) -- ++(0,2.5cm);
+		\draw (mcast.south east) -- ++(0,2.5cm);
+		\draw (dest.south east) -- ++(0,2.5cm);
+		\draw (src.south east) -- ++(0,2.5cm);
+		\draw[<->] ($(mcast.north west) + (0,0.5cm)$) -- ($(mcast.north east) + (0,0.5cm)$) node[midway, above] {\huge 1};
+		\draw[<->] ($(mcast.north east) + (0,0.5cm)$) -- ($(dest.north east) + (0,0.5cm)$) node[midway, above] {\huge 14};
+		\draw[<->] ($(dest.north east) + (0,0.5cm)$) -- ($(src.north east) + (0,0.5cm)$) node[midway, above] {\huge 14};
+	\end{tikzpicture}
+	\caption{Multicast-Group to Identifier Mapping}
+	\label{fig:des_multicast_to_id}
+	\end{center}
+\end{figure}

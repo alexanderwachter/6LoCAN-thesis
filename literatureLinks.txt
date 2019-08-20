@@ -1,0 +1,28 @@
+#CAN
+
+http://lbenchindia.cfavourites.com/finalyearprojectdatasheets/can2spec.pdf
+
+A Comprehensible Guide to Controller Area Network.
+https://books.google.at/books?hl=de&lr=&id=PU6ppO3XbUwC&oi=fnd&pg=PA8&dq=controller+area+network&ots=uT-AdPQzgJ&sig=UUaZ6nkQnqzSr6GoaFbWuzuzxac#v=onepage&q=controller%20area%20network&f=false 
+
+Understanding and Using the Controller Area Network Communication Protocol
+https://books.google.at/books?hl=de&lr=&id=rO-EfaSZbMAC&oi=fnd&pg=PR5&dq=controller+area+network&ots=epc3-GEmrE&sig=C5Ggx7gxJ19BXm5Ryo56l0sqDYk#v=onepage&q=controller%20area%20network&f=false
+
+Controller Area Network (CAN) Implementation Guide. (Analog Devices Application Note)
+https://www.analog.com/media/en/technical-documentation/application-notes/an-1123.pdf
+
+#IPv6
+
+Integrating Building Automation Systems and IPv6 in the Internet of Things
+https://ieeexplore.ieee.org/abstract/document/6296937
+
+Embedding internet technology for home automation
+https://ieeexplore.ieee.org/abstract/document/5641208
+
+IPv6 Addressing Proxy: Mapping Native Addressing from Legacy Technologies and Devices to the Internet of Things (IPv6)
+https://www.mdpi.com/1424-8220/13/5/6687/htm
+
+#Related Work
+
+The 6LoWPAN architecture
+https://dl.acm.org/citation.cfm?id=1278992

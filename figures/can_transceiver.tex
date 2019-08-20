@@ -1,0 +1,27 @@
+\begin{figure}[htp]
+\begin{circuitikz} \draw
+	(4.5,3) node[op amp, rotate=180] (amp){}
+	(amp.+) to [short,-o] ++(4, 0) node[right] {CAN H}
+	(amp.-) to [short,-o] ++(4, 0) node[right] {CAN L}
+	(2,3) node[invschmitt, rotate=180] (schm){}
+	(amp.out) to (schm.in)
+	(schm.out) to [short,-o] ++(-1, 0) node[left] {CAN RX}
+	(8,5) node[pmos,emptycircle] (pmos){}
+	(8,1) node[nmos] (nmos){}
+	(8,0.5) node[ground] (gnd){}
+	(8,6) node[vss, rotate = 180] (vss){}
+	(pmos.S) to (vss)
+	%(pmos.G) to [short] ++(-0.5,0)
+	(pmos.D) to [short,-*] ++(0,-0.75)
+	(nmos.D) to [short,-*] ++(0,0.75)
+	(2.75,4.75)node[draw, minimum height=1cm, minimum width=2cm] (timeout) {\small Dominant Timeout}
+	(5.75,4.75) node[draw, minimum height=1cm, minimum width=1.5cm] (driver) {\small Driver}
+	(6.5,5) to (pmos.G)
+	(6.5,4.5) to (7,4.5) to (7,1) to (nmos.G)
+	(timeout) to (driver)
+	(1,4.75) to [short,-o] ++(-0.75,0) node [left] {CAN TX}
+	;
+\end{circuitikz}
+\caption{Simplified CAN Transceiver}
+\label{fig:can_transceiver}
+\end{figure}

@@ -1,0 +1,43 @@
+\section*{Abstract}
+\label{cha:abstract}
+
+Nowadays, there is an ongoing trend towards end-to-end IPv6 for constrained devices.
+This way, the devices can benefit from the vast amount of application and transport layer protocols, defined on top of the Internet Protocol.
+Examples for such application layer protocols are MQTT, CoAP, HTTP, or transport layer protocols such as UDP, TCP, and TLS.
+However, most devices on the Internet use Link-Layers that do not fit the needs of constrained devices like power consumption, price, or PCB footprint.
+
+The Controller Area Network (CAN) is a very robust and simple bus.
+Lots of tiny microcontrollers have an integrated CAN controller that only needs an external transceiver to connect to a bus.
+This bus is usually used in the automotive and industrial domains.
+An example is the CANopen protocol, designed and used for automation.
+However, the protocols for the CAN bus serve a dedicated purpose and are not as flexible as the Internet Protocol.
+
+Therefore, this work proposes 6LoCAN, an abstraction layer for the CAN bus, which combines the great flexibility of IPv6 with the benefits of the CAN bus.
+With 6LoCAN, it is possible to connect small microcontrollers to the Internet, with only little effort.
+Those devices can then use application layer protocols to communicate with devices that have Link-Layers of all kinds, like Wi-Fi, Ethernet, or Bluetooth, without the need for a gateway.
+Meanwhile, 6LoCAN has an IETF standard proposal and a reference implementation in the Zephyr Real-Time Operating System, as an outcome of this work.
+
+\newpage
+
+\section*{Kurzfassung}
+Heutzutage erscheinen vermehrt elektonische Kleingeräte die über Ende-zu-Ende IPv6 kommunizieren.
+Auf diese Weise profitieren solche Geräte von den vielen Anwender- und Transport-Protokollen,
+die auf dem Internet Protokoll basieren.
+Beispiele für solche Anwender-Protokollen sind MQTT, CoAP, HTTP oder Transport-Protokolle wie UDP, TCP und TLS.
+Nichtsdestotrotz verwenden die meisten Geräte im Internet Verbindungsschichten, die den Anforderungen
+wie Energieverbrauch, Preis oder Flächenverbrauch auf der Leiterplatte von Kleingeräten nicht besonders gut erfüllen.
+
+Controller Area Network (CAN) ist ein sehr einfacher und robuster Bus.
+Viele kleine und günstige Mikrokontroller haben einen integrierten CAN Modul.
+Diese benötigen nur noch einen Bus-Treiber Baustein um sich mit dem Bus zu verbinden.
+Der CAN Bus wird hauptsächlich im Automobil und Industrie Sektor verwendet.
+Ein Beispiel dafür ist das CANopen Protokoll.
+Nichtsdestotrotz sind die verwendeten Protokolle für eine dedizierte Aufgabe geschaffen und verfügen nicht über die Flexibilität des Internet Protokolls.
+
+Deswegen stellt diese Arbeit 6LoCAN vor, einene 6Lo Abstraktionsschicht für den Controller Area Network Bus,
+welche die Flexibilität des Internet Protokolls mit den Vorteilen des CAN Bus verbindet.
+Mit 6LoCAN ist es möglich einfache Mikrokontroller, mit geringem Aufwand, mit dem Internet zu verbinden.
+Diese Geräte können wiederum über die Anwenderschicht-Protokolle mit geräten kommunizieren,
+die eventuell ganz andere \\Verbindungsschichten wie Ethernet, Wi-Fi oder Bluetooth verwenden.
+Für 6LoCAN existiert mittlerweile ein Vorschlag für einen Standard bei der IETF und eine referenz Implementierung im Zephyr Echtzeitbetriebsystem,
+welche im Zuge dieser Arbeit entstanden sind.

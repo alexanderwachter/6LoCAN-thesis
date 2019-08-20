@@ -1,0 +1,101 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[
+		scale=0.7,
+		every node/.append style={scale=0.7},
+		layers/.style={
+			align=left,
+			fill=blue!5,
+			rectangle,
+			draw=blue!5,
+			minimum width = 12cm,
+			node distance=0.2cm},
+		layers_dark/.style={
+			draw=black,
+			fill=blue!15,
+			rectangle,
+			minimum width = 12cm,
+			minimum height = 1cm,
+			node distance=0.2cm},
+		layer_rot/.style={
+			draw=black,
+			fill=blue!15,
+			rectangle},
+		instance/.style={
+			draw=black,
+			rounded corners=0.05cm,
+			fill=blue!15,
+			rectangle, 
+			minimum width=2cm,
+			minimum height=1cm,
+			align=center,
+			font=\small},
+		instance_wide/.style={
+			draw=black,
+			rounded corners=0.05cm,
+			fill=blue!15,
+			rectangle, 
+			minimum width=4cm,
+			minimum height=1cm,
+			align=center,
+			font=\small}
+		]
+
+		%App
+		\node (app)[layers_dark] {Networking Application};
+	
+	
+	
+		%Sockets API
+		\node (sockets)[layers_dark, below = of app.south west,anchor=north west] {Sockets API};
+
+		%Net-context
+		\node (netctx)[layers_dark, below = of sockets.south west,anchor=north west] {Net-Context API};
+	
+		%Transport-Layer Protocols
+		\node (transp)[layers,below = of netctx.south west,anchor=north west, text width = 9.1cm, minimum height = 4cm, text depth = 3cm] {Transport-Layer Protocols};
+		\foreach \tansport/\x/\y in {ICMPv4/-2.5/0.75, ICMPv6/2.5/0.75, TCP/-2.5/-0.5, UDP/2.5/-0.5}{
+			\node (\tansport) at ($(transp) + (\x cm, \y cm -0.5 cm)$) [instance_wide] {\tansport};
+		}
+
+		%Networking Protocols
+		\node (netw)[layers,below = of transp.south west,anchor=north west, text width=9.1cm, minimum height = 2.5cm, text depth = 1.5cm] {Networking Protocols};
+		\foreach \network/\x in {IPv4/-2.5, IPv6/2.5}{
+			\node (\network) at ($(netw) + (\x cm, -0.5 cm)$) [instance_wide] {\network};
+		}
+
+		%Interface Abstraction
+		\node (netcore)[layers_dark, below = of netw.south west,anchor=north west] {Network Core};
+
+		%Interface Abstraction
+		\node (interf)[layers_dark, below = of netcore.south west,anchor=north west] {Network Interface Abstraction Layer};
+
+		%Link-Layer
+		\node (linklayer)[layers, below = of interf.south west,anchor=north west, text width = 10.3cm, minimum height = 2.5cm, text depth = 1.5cm] {Link-Layer Technologies};
+		\foreach \linklayer/\x/\col in {Ethernet/-4/blue!15, 6LoWPAN/-1.25/blue!15, 6LoCAN/1.25/green!15, IPSP/4/blue!15}{
+			\node (\linklayer) at ($(linklayer) + (\x cm, -0.5 cm)$) [instance, fill=\col] {\linklayer};
+		}
+
+		%Network drivers
+		\node (net_drivers)[layers, below = of linklayer.south west,anchor=north west, text width = 11.5cm, minimum height = 3cm, text depth = 2cm] {Network Device Drivers};
+		\foreach \driver/\x/\col in {Ethernet/-4.5/blue!15, CAN/-1.5/green!15, 802.15.4/1.5/blue!15, Other/4.5/blue!15}{
+			\foreach \inst in {0.3,0.2,0.1}{
+				\node at ($(net_drivers) + (\x cm - \inst cm, -0.5 cm + \inst cm)$) [instance] {};
+			}
+			\node (\driver)  at ($(net_drivers) + (\x cm, -0.5 cm)$) [instance, fill=\col] {\driver \\ drivers};
+		}
+
+		\draw [arrow] (app.south) -- node[draw, circle, anchor=east, xshift=-0.1cm] {1} (sockets.north);
+		\draw [arrow] (sockets) -- node[draw, circle, anchor=east, xshift=-0.1cm] {2} (netctx);
+		\draw [arrow_both] ([xshift=0.5cm]IPv6.north) coordinate (IPv61) -- node[draw, circle, anchor=west, xshift=0.1cm, yshift=2cm] {3} (netctx.south -| IPv61);
+		\draw [arrow_both] ([xshift=-0.5cm]UDP.north) coordinate (UDP1) -- node[draw, circle, anchor=east, xshift=-0.1cm, yshift=0.5cm] {4} (netctx.south -| UDP1);
+		\draw [arrow] (netctx) -- node[draw, circle, anchor=east, xshift=-0.1cm, yshift=-0.5cm] {5} (netcore);
+		\draw [arrow] (netcore) -- node[draw, circle, anchor=east, xshift=-0.1cm] {6} (interf);
+		\draw [arrow_rev] (6LoCAN.north) coordinate (6locan1) --  node[draw, circle, anchor=east, xshift=-0.1cm]{7} (interf.south -| 6locan1);
+		\draw [arrow] (6LoCAN.south) --  node[draw, circle, anchor=east, xshift=-0.1cm, yshift=0.1cm]{8} (CAN.north);
+
+	\end{tikzpicture}
+	\caption{Zephyr Network Stack 6LoCAN TX example}
+	\label{fig:zephyr_net_stack_tx}
+	\end{center}
+\end{figure}

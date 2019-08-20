@@ -1,0 +1,19 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.75]
+		\draw (0,0) rectangle (16,1);
+		\draw (0,1) -- ++(0,0.5);
+		\draw (3,0) -- ++(0,1.5);
+		\draw (8,0) -- ++(0,1.5);
+		\draw (16,1) -- ++(0,0.5);
+		\node at (1.5, 0.5) {\small 1111111010};
+		\node at (5.5, 0.5) {\small 0};
+		\node at (12, 0.5) {\small Interface Identifier};
+		\draw[<->] (0,1.25) -- (3,1.25) node[midway, above] {\small 10 bits};
+		\draw[<->] (3,1.25) -- (8,1.25) node[midway, above] {\small 54 bits};
+		\draw[<->] (8,1.25) -- (16,1.25) node[midway, above] {\small 64 bits};
+	\end{tikzpicture}
+	\end{center}
+	\caption{Link Local Unicast address}
+	\label{fig:ipv6_ll_unicast}
+\end{figure}

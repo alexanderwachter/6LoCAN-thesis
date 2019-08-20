@@ -1,0 +1,42 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.45, node distance=2cm, every node/.append style={scale=0.45}]
+		\node (start) [startstop] {Interface up};
+		\node (ll_ten) [process, below = of start] {Create tentative Link-Local address};
+		\node (dad_ns) [io, below = of ll_ten] {Send NS message with tentative Link-Local address (DAD)};
+		\node (dad_na) [io, below = of dad_ns] {Wait for NA message with tentative Link-Local address (DAD) or Timeout};
+		\node (dad) [decision, below = of dad_na] {NA message received?};
+		\node (alt_addr) [decision, right of=dad, xshift=7cm] {Alternative address?};
+		\node (dad_fail) [startstop, below = of alt_addr] {DAD failed};
+		\node (ll) [process, below = of dad] {Apply Link-Local address};
+		\node (rs) [io, below = of ll] {Send RS};
+		\node (ra) [io, below = of rs] {Wait for RA};
+		\node (glob_create) [process, below = of ra] {Create tentative global address};
+		\node (dad_ns_glob) [io, below = of glob_create] {Send NS message with global address from RA prefix (DAD)};
+		\node (dad_na_glob) [io, below = of dad_ns_glob] {Wait for NA message with global address from RA prefix (DAD) or Timeout};
+		\node (dad_glob) [decision, below = of dad_na_glob] {NA message received?};
+		\node (glob) [process, below = of dad_glob] {Apply global address};
+
+		\draw [arrow] (start) -- (ll_ten);
+		\draw [arrow] (ll_ten) -- (dad_ns);
+		\draw [arrow] (dad_ns) -- (dad_na);
+		\draw [arrow] (dad_na) -- (dad);
+		\draw [arrow] (dad) -- node [anchor=south] {yes (DAD failed)} (alt_addr);
+		\draw [arrow] (dad) -- node [anchor=east] {no (DAD succeeded)} (ll);
+		\draw [arrow] (alt_addr) |- node [anchor=south] {yes} (ll_ten);
+		\draw [arrow] (alt_addr) -- node [anchor=east] {no} (dad_fail);
+		\draw [arrow] (ll) -- (rs);
+		\draw [arrow] (rs) -- (ra);
+		\draw [arrow] (ra) -- (glob_create);
+		\draw [arrow] (glob_create) -- (dad_ns_glob);
+		\draw [arrow] (dad_ns_glob) -- (dad_na_glob);
+		\draw [arrow] (dad_na_glob) -- (dad_glob);
+		\draw [arrow] (dad_glob) -- node [anchor=east] {no (DAD succeeded)} (glob);
+		\coordinate [right = of ra] (ra_right) ;
+		\draw [arrow] (dad_glob.east) -- ++(2cm,0) node [anchor=south] {yes (DAD failed)} -|   (ra_right) -- (ra.east);
+		\draw [arrow] (glob.south) -- ++(0,-1cm) -| (ra_right) -- (ra);
+	\end{tikzpicture}
+	\end{center}
+	\caption{Stateless Address Autoconfiguration}
+	\label{fig:ipv6_slaac}
+\end{figure}

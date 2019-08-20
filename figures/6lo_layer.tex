@@ -1,0 +1,41 @@
+\begin{figure}[htp]
+	\begin{tikzpicture}[
+		layer/.style={
+			minimum width=13cm,
+			text width=13cm,
+			minimum height=1.5cm,
+			fill=black!5,
+			align=left,
+			node distance=0,
+			font=\small},
+		example/.style={
+				draw=black,
+				fill=white,	
+				rectangle, 
+				minimum width=2.5cm,
+				minimum height=0.75cm,
+				font=\small},
+		node distance=0.25cm and 1cm]
+\begin{scope}[on background layer]
+		\node (app) [layer] {Application};
+		\node (transp) [below = of app, layer] {Transport};
+		\node (inet) [below = of transp, layer] {Internet};
+		\node (link) [below = of inet, yshift=-0.5cm,layer] {Link};
+		\node at (link) (adapt)  [fill=green!20, text width=9cm, minimum height=1cm, align=left, xshift=-2cm, yshift=0.85cm] {6lo Adaption};
+\end{scope}
+		\node (app_http) [right of = app, xshift=-2.5cm, example] {HTTP};
+		\node (app_coap) [right = of app_http, example] {CoAP};
+		\node (app_mqtt) [right = of app_coap, example] {MQTT};
+		\node (transp_udp) [right of = transp, xshift=-2.5cm, example] {UDP};
+		\node (transp_tcp) [right = of transp_udp, example] {TCP};
+		\node (transp_icmp) [right = of transp_tcp, example] {ICMPv6};
+		\node (inet_ipv6) [right of = inet, xshift=1cm, example, minimum width=9cm] {IPv6};
+		\node (link_wpan) [right of = link, xshift=-2.5cm, example] {802.15.4};
+		\node (link_can) [right = of link_wpan, example] {CAN};
+		\node (adapt_6lowpan) [above = of  link_wpan, yshift=-0.2cm, example] {6LoWPAN};
+		\node (adapt_6locan) [above = of link_can, yshift=-0.2cm, example] {6LoCAN};
+		\node (link_eth) [right = of link_can, example] {Ethernet};
+	\end{tikzpicture}
+	\caption{6lo Adaption layer example}
+	\label{fig:6lo_layer}
+\end{figure}

@@ -1,0 +1,26 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.75]
+		\draw (0,0) rectangle (8,1);
+		\draw (0,1) -- ++(0,0.5);
+		\draw (8,1) -- ++(0,0.5);
+		\draw[<->] (0,1.25) -- (8,1.25) node[midway, above] {\small 8 bits};
+
+		\foreach \x in {1,2,...,7}{
+			\draw (\x,1) -- ++(0,-0.1);
+			\draw (\x,0) -- ++(0,0.1);
+		}
+		\foreach \x in {0.5,1.5,...,3.5}{
+			\node at (\x, 0.5) {\small 1};
+		}
+
+		\node at (4.5, 0.5) {\small 0};
+		\draw (5,0) -- ++(0,1);
+		\node at (5.5, 0.5) {\small C};
+		\draw (6,0) -- ++(0,1);
+		\node at (7, 0.5) {\small P};
+	\end{tikzpicture}
+	\end{center}
+	\caption{Next Header Compression for UDP Headers}
+	\label{fig:6lo_nhc_udp}
+\end{figure}

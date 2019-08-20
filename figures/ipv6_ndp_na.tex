@@ -1,0 +1,42 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.75]
+		\draw (0,0) -- (16,0) -- (16,8) -- (0,8) -- cycle;
+		\draw (0,8) -- ++(0,0.5) node[right] {\small 0};
+		\draw (4,8) -- ++(0,0.5) node[right] {\small 8};
+		\draw (8,8) -- ++(0,0.5) node[right] {\small 16};
+		\draw (12,8) -- ++(0,0.5) node[right] {\small 24};
+		\draw (16,8) -- ++(0,0.5) node[right] {\small 32};
+
+		\draw (4,7) -- ++(0,1);
+		\node at (2,7.5) {\small 136 (Type)};
+		\draw (8,7) -- ++(0,1);
+		\node at (6, 7.5) {\small 0 (Code)};
+		\node at (12, 7.5) {\small Checksum};
+		\draw (0,7) -- ++(16,0);
+
+		\draw (0.5,6) -- ++(0,1);
+		\node at (0.25, 6.5) {\small R};
+		\draw (1,6) -- ++(0,1);
+		\node at (0.75, 6.5) {\small S};
+		\draw (1.5,6) -- ++(0,1);
+		\node at (1.25, 6.5) {\small O};
+		\node at (8, 6.5) {\small Reserved};
+		\draw (0,6) -- ++(16,0);
+
+		\node at (8, 4) {\small Target Address};
+		\draw (0,2) -- ++(16,0);
+		
+		\draw (4,2) -- (4,1);
+		\node at (2,1.5) {\small 2 (TLLAO)};
+		\draw (8,2) -- (8,1);
+		\node at (6, 1.5) {\small 1 (Length)};
+		\node at (12, 1.5) {\small Target Link-Layer Address ...};
+		\draw (0,1) -- ++(16,0);
+		\node at (8, 0.5) {\small ...};
+
+	\end{tikzpicture}
+	\end{center}
+	\caption{Neighbor Advertisement Message Example}
+	\label{fig:ipv6_na}
+\end{figure}

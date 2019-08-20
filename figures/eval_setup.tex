@@ -1,0 +1,80 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[
+		scale=0.8,
+		every node/.append style={scale=0.8},
+		can_node/.style={
+			align=center,
+			fill=blue!5,
+			rectangle,
+			draw=black,
+			rounded corners=0.1cm,
+			minimum width = 3.5cm,
+			minimum height = 5cm,
+			node distance=1cm},
+		can_trans/.style={
+			align=center,
+			fill=black!5,
+			rectangle,
+			draw=black,
+			rounded corners=0.1cm,
+			minimum width = 2.5cm,
+			minimum height = 2cm,
+			node distance=1.25cm},
+		host_node/.style={
+			align=center,
+			fill=green!5,
+			rectangle,
+			draw=black,
+			rounded corners=0.1cm,
+			minimum width = 3.5cm,
+			minimum height = 5cm,
+			node distance=2cm},
+		logicanalyzer/.style={
+			align=center,
+			fill=green!5,
+			rectangle,
+			draw=black,
+			rounded corners=0.1cm,
+			minimum width = 3.5cm,
+			minimum height = 2cm,
+			node distance=4cm}
+		]
+
+		\node (node1)[can_node] {STmicro\\Nucleo-F746ZG};
+		\node (trans1)[can_trans, above = of node1] {CAN\\Transceiver};
+		\node (node2)[can_node, right = of node1] {NXP\\FRDM-K64F};
+		\node (trans2)[can_trans, above = of node2] {CAN\\Transceiver};
+		\node (node3)[can_node, right = of node2] {STmicro\\Nucleo-F746ZG};
+		\node (trans3)[can_trans, above = of node3] {CAN\\Transceiver};
+		\node (host)[host_node, below = of node1] {Host-PC};
+		\node (logicanalyzer)[logicanalyzer, right = of host, yshift=-1.5cm] {Logic-Analyzer};
+
+		\draw ([xshift=1cm]trans1.north) -- ++(0,1cm) node[above, xshift=0.75cm]{GND} -|  ([xshift=1cm]trans3.north);
+		\draw ([xshift=1cm]trans2.north) -- ++(0,1cm);
+		\draw ([xshift=-0.25cm]trans1.north) -- ++(0,2.5cm) node[above, xshift=2cm]{CAN H} -|  ([xshift=-0.25cm]trans3.north);
+		\draw ([xshift=-0.25cm]trans2.north) -- ++(0,2.5cm);
+		\draw ([xshift=0.25cm]trans1.north) -- ++(0,2cm) node[above, xshift=1.5cm]{CAN L} -| ([xshift=0.25cm]trans3.north);
+		\draw ([xshift=0.25cm]trans2.north) -- ++(0,2cm);
+		\foreach \i in {1,2,3}{
+			\draw[<-] ([xshift=-0.75cm]trans\i.south) -- ([xshift=-0.75cm]node\i.north) node[midway, above, rotate=90] {TX};
+			\draw[->] ([xshift=-0.25cm]trans\i.south) -- ([xshift=-0.25cm]node\i.north) node[midway, above, rotate=90] {RX};
+			\draw ([xshift=0.25cm]trans\i.south) -- ([xshift=0.25cm]node\i.north) node[midway, above, rotate=90] {5V};
+			\draw ([xshift=0.75cm]trans\i.south) -- ([xshift=0.75cm]node\i.north) node[midway, above, rotate=90]  {GND};
+		}
+
+		\draw ([xshift=-1cm]node1.south) -- ([xshift=-1cm]host.north) node[midway, anchor=east] {USB};
+		\draw ([xshift=-1cm]node2.south) |- ([yshift=1.5cm]host.east) node[midway, anchor=west] {USB};
+		\draw ([xshift=-1cm]node3.south) |- ([yshift=1cm]host.east) node[midway, anchor=west] {USB};
+
+		\draw (node1.south) -- (host.north) node[midway, anchor=west] {Ethernet};
+
+		\draw (logicanalyzer.west) -- (host.east |- logicanalyzer.west) node[midway, above] {USB};
+		\draw[<-] ([yshift=-0.25cm]logicanalyzer.east) -- ++(2cm,0) node[midway, below] {CAN RX} |- ([xshift=-0.25cm, yshift=-0.25cm]trans3.south);
+		\draw ([yshift=0.25cm]logicanalyzer.east) -- ++(1.5cm,0) |- ([xshift=0.75cm, yshift=-1cm]trans3.south);
+	
+	\end{tikzpicture}
+	\caption{Test Setup}
+	\label{fig:eval_setup}
+	\end{center}
+\end{figure}

@@ -1,0 +1,29 @@
+\begin{figure}[htp]
+	\begin{center}
+	\begin{tikzpicture}[scale=0.4,  every node/.style={scale=0.4},
+		region/.style={
+			rectangle,
+			draw,
+			align=center,
+			font=\Large,
+			minimum height=2cm}]
+
+		\node (mcast) [region, minimum width=1cm] {0};
+		\node (dest) [region, right of=mcast,xshift=1.5cm, minimum width=4cm] { DEST (0x3DF0)};
+		\node (src) [region, right of=dest,xshift=3cm, minimum width=4cm] {SRC (0x123)};
+		\node (dstmacil) [region, right of=src,xshift=4cm, minimum width=6cm] {Inlined DEST MAC};
+
+		\node (dstmac) [region, right of=dstmacil, xshift=9cm, minimum width=7cm] {DEST MAC};
+		\node (srcmac) [region, right of=dstmac, xshift=6cm, minimum width=7cm] {SRC MAC \\ (DE:AD:BE:EF:01:23)};
+
+		\draw[thick, ->] (dstmacil.east) -- (dstmac.west) coordinate[midway](border);
+		\draw[dashed, black!50] ($(border) + (0,-3cm)$) -- ($(border) + (0,4.5cm)$);
+		\node at ($(border) + (-2cm,3.5cm)$) {\Huge 6LoCAN};
+		\node at ($(border) + (2cm,3.5cm)$) {\Huge Ethernet};
+		\draw[->] (dstmacil.south) .. controls ++(5cm,-1.5cm) .. (dstmac.south);
+		\draw[->] (src.north) .. controls ++(9cm,1.5cm) .. (srcmac.north) node [align=center, very near start, above, yshift=0.25cm] {\Large Extend with Prefix \\ \Large(DE:AD:BE:EF)};
+	\end{tikzpicture}
+	\caption{6LoCAN to Ethernet Address Translation}
+	\label{fig:bordertrans_6lo_eth}
+	\end{center}
+\end{figure}

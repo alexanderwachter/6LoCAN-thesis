@@ -1,0 +1,28 @@
+
+\chapter{Introduction}
+\label{cha:introduction}
+
+Nowadays, there is an ongoing trend towards end-to-end IPv6 for constrained devices.
+This trend is called the Internet Of Things (IoT). It means that many devices are connected,
+using internet technology. Some devices like smartphones or personal computers usually have a connection to the Internet out of the box,
+but more and more devices that usually don’t have a connection to the Internet become connected devices. Examples are light-bulbs, fridges or
+building automation systems \cite{6296937}.
+The advantage of using the Internet Protocol is that there are plenty of standardized application layer protocols like CoAP or MQTT,
+that can be used for those devices. ”Project Connected Home over IP” \cite{connhome}, for example, is a project from global players like
+Apple, Google, Amazon, and many more, that is trying to establish a standardized interface for home application, based on the Internet Protocol.
+With this kind of interface, devices from different vendors and different communication mediums, like Wi-Fi, Ethernet, or Bluetooth Low Energy (BLE),
+can work together seamlessly.
+
+The Eclipse Sparkplug working group \cite{sparkplug} is currently working on defining a standard to use MQTT in the Industrial IoT.
+This initiative shows that there is a high demand for IP technologies in the industry.
+
+There are lots of Link-Layer technologies already in use. They all have their domain-specific use-case.
+Ethernet or Wi-Fi are mostly used for high-speed data links suitable for the typical use case of a PC or smartphone.
+When using these technologies for tiny devices like a light-switch, problems like high costs, large PCB footprint, or high energy consumption may arise.
+The IoT, as we have it today, is mostly based on wireless technologies, but sometimes it is just not feasible to use a wireless link.
+Wireless links are prone to electromagnetic disturbances and have problems with range, especially when used in buildings with massive walls.
+The CAN-bus is a very robust and cheap bus that is widely used in the automotive and industrial automation (CANopen \cite{canopen}) domain.
+It is also used for heating systems and thus already used in building automation today.
+
+The combination of IPv6 and the CAN bus could be very useful to solve lots of challenges with technology we are already using today.
+With 6LoCAN, it is possible to connect devices with a wired bus to any other device that works with IPv6.

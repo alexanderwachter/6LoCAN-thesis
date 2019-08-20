@@ -1,0 +1,20 @@
+\chapter{Conclusion}
+\label{cha:conclusion}
+
+6LoCAN brings end-to-end IPv6 to small-scale microcontrollers with only a few additional components, like the CAN transceiver.
+It can be used for non-realtime communication and bulky data transfers.
+If configured to use a random address assignment, it is zero-configuration capable and does not require any settings or persistent memory.
+Nodes can join a 6LoCAN network seamlessly. The nodes could, for example, be identified with host-names and multicast DNS discovery.
+The CAN-bus is not the most efficient bearer for IPv6 traffic, because of the small frame payload of eight bytes for classic CAN, but with the 64-byte payload of CAN-FD, packets with small payload can even fit a single frame.
+By using IPv6 instead of raw data transfers, it is possible to use any application-layer protocol that works on top of IP.
+With IPv6, it is, for example, possible to encrypt the traffic using the well known TLS protocol \cite{rfc8446}.
+Devices that already have native IPv6 support can easily be connected to large-scale networks like the internet.
+6LoCAN supports multicast groups natively, and therefore, very efficiently.
+Packets to dedicated groups are only received by nodes that subscribed to the group.
+This property could be used for efficient implementations of a publisher and subscriber models like MQTT.
+Since 6LoCAN only uses the 29-bit extended addresses, the 11-bit standard address range is still usable for other protocols.
+An 11-bit standard address always has a higher priority on the bus than an extended address, and therefore the standard address-range can still even be used for high priority traffic, like real-time events.
+It could also share the bus with other existing protocols like CANopen.
+CANopen could, for example, be used for machine control, as ith has been used before, and 6LoCAN could be used for interfacing control panels.
+
+The 6LoCAN standard-draft \cite{wachter-6lo-can-00} was submitted to the Internet Engineering Task Force (IETF) in October 2019.
